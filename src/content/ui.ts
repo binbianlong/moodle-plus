@@ -38,6 +38,43 @@ export type TimetableUI = {
   render(timetable: TimetableData, state: TimetableUIState): void;
 };
 
+function pickCssVar(style: CSSStyleDeclaration, names: string[], fallback: string): string {
+  for (const name of names) {
+    const value = style.getPropertyValue(name).trim();
+    if (value) return value;
+  }
+  return fallback;
+}
+
+function getThemeTokens(): string {
+  const rootStyle = getComputedStyle(document.documentElement);
+
+  const bodyBg = pickCssVar(rootStyle, ['--body-bg', '--bs-body-bg'], '#f8f9fa');
+  const surface = pickCssVar(rootStyle, ['--card-bg', '--bs-card-bg', '--bs-white'], '#ffffff');
+  const border = pickCssVar(rootStyle, ['--border-color', '--bs-border-color', '--gray-300'], '#d9dee4');
+  const text = pickCssVar(rootStyle, ['--body-color', '--bs-body-color', '--gray-900'], '#2b3138');
+  const muted = pickCssVar(rootStyle, ['--secondary', '--bs-secondary-color', '--gray-600'], '#5f6b7a');
+  const primary = pickCssVar(rootStyle, ['--primary', '--bs-primary'], '#0f6cbf');
+  const primaryHover = pickCssVar(rootStyle, ['--primary-600', '--bs-primary-text-emphasis'], '#0c5a9f');
+
+  return `
+    --mpt-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    --mpt-bg-page: ${bodyBg};
+    --mpt-bg-surface: ${surface};
+    --mpt-bg-subtle: color-mix(in srgb, ${bodyBg} 70%, ${surface} 30%);
+    --mpt-border: ${border};
+    --mpt-text: ${text};
+    --mpt-text-muted: ${muted};
+    --mpt-primary: ${primary};
+    --mpt-primary-hover: ${primaryHover};
+    --mpt-primary-soft: color-mix(in srgb, ${primary} 14%, ${surface} 86%);
+    --mpt-danger-soft: #eef1f4;
+    --mpt-danger-text: #4b5563;
+    --mpt-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
+    --mpt-radius: 8px;
+  `;
+}
+
 export function createTimetableUI(callbacks: Callbacks): TimetableUI {
   const host = document.createElement('div');
   host.className = 'mpt-host';
@@ -45,23 +82,282 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
 
   const style = document.createElement('style');
   style.textContent = `
-    :host { all: initial; }
-    .mpt-wrap { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; border: 1px solid #c6ccd6; border-radius: 10px; background: #fff; margin: 8px 0 16px; padding: 12px; box-sizing: border-box; max-width: 1200px; }
-    .mpt-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px; }
-    .mpt-title { font-size: 16px; font-weight: 700; color: #20262f; }
-    .mpt-message { font-size: 13px; color: #0d5ea6; min-height: 20px; }
-    .mpt-btn { position: sticky; bottom: 12px; margin-left: auto; display: block; border: 1px solid #2e6fb3; background: #2e6fb3; color: #fff; border-radius: 999px; padding: 8px 14px; font-size: 13px; cursor: pointer; }
-    .mpt-btn:hover { background: #24598f; }
-    .mpt-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-    .mpt-table th, .mpt-table td { border: 1px solid #d2d8e0; padding: 6px; vertical-align: top; }
-    .mpt-table th { background: #f4f7fb; font-size: 13px; }
-    .mpt-period { width: 60px; text-align: center; font-weight: 700; }
-    .mpt-cell { position: relative; min-height: 54px; font-size: 13px; cursor: pointer; }
-    .mpt-cell.mpt-selected { outline: 2px solid #ff8c00; outline-offset: -2px; }
-    .mpt-lesson-link { color: #1558a6; text-decoration: none; word-break: break-word; display: block; padding-right: 18px; }
-    .mpt-lesson-link:hover { text-decoration: underline; }
-    .mpt-remove { position: absolute; right: 4px; top: 3px; border: none; background: #d64545; color: #fff; width: 16px; height: 16px; line-height: 16px; border-radius: 50%; font-size: 11px; cursor: pointer; padding: 0; }
-    .mpt-empty { color: #95a1af; }
+    :host {
+      all: initial;
+      ${getThemeTokens()}
+      color: var(--mpt-text);
+      font-family: var(--mpt-font-family);
+    }
+
+    .mpt-wrap {
+      font-family: var(--mpt-font-family);
+      background: var(--mpt-bg-surface);
+      border: 1px solid var(--mpt-border);
+      border-radius: var(--mpt-radius);
+      box-shadow: var(--mpt-shadow);
+      margin: 6px 0 14px;
+      padding: 12px;
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .mpt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .mpt-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .mpt-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--mpt-text);
+      line-height: 1.3;
+    }
+
+    .mpt-message {
+      font-size: 12px;
+      color: var(--mpt-text-muted);
+      border-radius: 6px;
+      border: 1px solid transparent;
+      border-left-width: 3px;
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(-2px);
+      transition: opacity 120ms ease, transform 120ms ease, max-height 160ms ease, padding 120ms ease;
+    }
+
+    .mpt-message.mpt-show {
+      background: var(--mpt-primary-soft);
+      border-color: color-mix(in srgb, var(--mpt-primary) 20%, var(--mpt-bg-surface) 80%);
+      color: color-mix(in srgb, var(--mpt-primary) 75%, var(--mpt-text) 25%);
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 52px;
+      padding: 6px 8px;
+    }
+
+    .mpt-btn {
+      height: 34px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      padding: 0 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .mpt-btn:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--mpt-primary) 28%, transparent 72%);
+    }
+
+    .mpt-btn-primary {
+      background: var(--mpt-primary);
+      border-color: var(--mpt-primary);
+      color: #fff;
+    }
+
+    .mpt-btn-primary:hover {
+      background: var(--mpt-primary-hover);
+      border-color: var(--mpt-primary-hover);
+    }
+
+    .mpt-btn-primary:active {
+      background: color-mix(in srgb, var(--mpt-primary-hover) 88%, #000 12%);
+    }
+
+    .mpt-btn-secondary {
+      background: var(--mpt-bg-surface);
+      border-color: var(--mpt-border);
+      color: var(--mpt-text);
+    }
+
+    .mpt-btn-secondary:hover {
+      background: var(--mpt-bg-subtle);
+      border-color: color-mix(in srgb, var(--mpt-border) 85%, var(--mpt-text) 15%);
+    }
+
+    .mpt-btn-secondary:active {
+      background: color-mix(in srgb, var(--mpt-bg-subtle) 90%, #000 10%);
+    }
+
+    .mpt-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+      background: var(--mpt-bg-surface);
+    }
+
+    .mpt-table th,
+    .mpt-table td {
+      border: 1px solid var(--mpt-border);
+      padding: 0;
+      vertical-align: middle;
+      background: var(--mpt-bg-surface);
+    }
+
+    .mpt-table th {
+      background: var(--mpt-bg-subtle);
+      color: color-mix(in srgb, var(--mpt-text) 85%, var(--mpt-text-muted) 15%);
+      font-weight: 600;
+      height: 34px;
+      text-align: center;
+    }
+
+    .mpt-period {
+      width: 54px;
+      min-width: 54px;
+      font-size: 12px;
+    }
+
+    .mpt-cell {
+      position: relative;
+      cursor: pointer;
+      transition: background-color 120ms ease, box-shadow 120ms ease;
+    }
+
+    .mpt-cell:hover {
+      background: color-mix(in srgb, var(--mpt-primary) 4%, var(--mpt-bg-surface) 96%);
+    }
+
+    .mpt-cell.mpt-selected {
+      background: color-mix(in srgb, var(--mpt-primary) 8%, var(--mpt-bg-surface) 92%);
+      box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--mpt-primary) 55%, var(--mpt-bg-surface) 45%);
+    }
+
+    .mpt-cell-inner {
+      display: flex;
+      align-items: center;
+      min-height: 46px;
+      padding: 6px 10px;
+      width: 100%;
+      box-sizing: border-box;
+      min-width: 0;
+    }
+
+    .mpt-lesson-link {
+      display: block;
+      color: var(--mpt-primary);
+      text-decoration: none;
+      min-width: 0;
+      width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.35;
+      padding-right: 18px;
+    }
+
+    .mpt-lesson-link:hover {
+      text-decoration: underline;
+    }
+
+    .mpt-empty {
+      display: block;
+      width: 100%;
+      color: color-mix(in srgb, var(--mpt-text-muted) 80%, var(--mpt-bg-surface) 20%);
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0.7;
+    }
+
+    .mpt-remove {
+      position: absolute;
+      right: 6px;
+      top: 5px;
+      width: 20px;
+      height: 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      background: var(--mpt-danger-soft);
+      color: var(--mpt-danger-text);
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
+    }
+
+    .mpt-cell:hover .mpt-remove,
+    .mpt-cell:focus-within .mpt-remove,
+    .mpt-remove:focus-visible {
+      opacity: 1;
+    }
+
+    .mpt-remove:hover {
+      background: color-mix(in srgb, var(--mpt-danger-soft) 75%, #d1d5db 25%);
+      border-color: color-mix(in srgb, var(--mpt-border) 80%, var(--mpt-text) 20%);
+    }
+
+    .mpt-remove:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 0.16rem color-mix(in srgb, var(--mpt-primary) 24%, transparent 76%);
+    }
+
+    @media (max-width: 640px) {
+      .mpt-wrap {
+        padding: 10px;
+      }
+
+      .mpt-header {
+        align-items: flex-start;
+      }
+
+      .mpt-title {
+        font-size: 15px;
+      }
+
+      .mpt-btn {
+        height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+      }
+
+      .mpt-table {
+        font-size: 12px;
+      }
+
+      .mpt-period {
+        width: 42px;
+        min-width: 42px;
+      }
+
+      .mpt-cell,
+      .mpt-cell-inner {
+        min-height: 40px;
+      }
+
+      .mpt-cell-inner {
+        padding: 4px 7px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --mpt-shadow: 0 1px 2px rgb(0 0 0 / 0.24);
+      }
+    }
   `;
 
   const root = document.createElement('div');
@@ -70,6 +366,9 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
   const header = document.createElement('div');
   header.className = 'mpt-header';
 
+  const titleGroup = document.createElement('div');
+  titleGroup.className = 'mpt-title-group';
+
   const title = document.createElement('div');
   title.className = 'mpt-title';
   title.textContent = '時間割';
@@ -77,17 +376,18 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
   const message = document.createElement('div');
   message.className = 'mpt-message';
 
-  header.append(title, message);
-
-  const table = document.createElement('table');
-  table.className = 'mpt-table';
-
   const toggleButton = document.createElement('button');
   toggleButton.className = 'mpt-btn';
   toggleButton.type = 'button';
   toggleButton.addEventListener('click', () => callbacks.onToggleEdit());
 
-  root.append(header, table, toggleButton);
+  titleGroup.append(title, message);
+  header.append(titleGroup, toggleButton);
+
+  const table = document.createElement('table');
+  table.className = 'mpt-table';
+
+  root.append(header, table);
   shadow.append(style, root);
 
   const cellMap = new Map<string, HTMLTableCellElement>();
@@ -140,11 +440,15 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
     const isSelected = state.selectedCell?.day === day && state.selectedCell?.period === period;
     cellEl.classList.toggle('mpt-selected', Boolean(isSelected));
 
+    const inner = document.createElement('div');
+    inner.className = 'mpt-cell-inner';
+
     if (!lesson) {
       const empty = document.createElement('span');
       empty.className = 'mpt-empty';
-      empty.textContent = ' '; // Keep cell height stable.
-      cellEl.appendChild(empty);
+      empty.textContent = state.editMode ? 'クリックして選択' : ' '; // Keep height stable.
+      inner.appendChild(empty);
+      cellEl.appendChild(inner);
       return;
     }
 
@@ -152,6 +456,7 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
     link.className = 'mpt-lesson-link';
     link.textContent = lesson.title;
     link.href = lesson.url;
+    link.dataset.url = lesson.url;
 
     if (state.editMode) {
       link.addEventListener('click', (event) => {
@@ -165,13 +470,15 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
       });
     }
 
-    cellEl.appendChild(link);
+    inner.appendChild(link);
+    cellEl.appendChild(inner);
 
     if (state.editMode) {
       const remove = document.createElement('button');
       remove.className = 'mpt-remove';
       remove.type = 'button';
       remove.textContent = 'x';
+      remove.setAttribute('aria-label', '授業を削除');
       remove.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
@@ -187,7 +494,11 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
     },
     render(timetable: TimetableData, state: TimetableUIState) {
       message.textContent = state.message;
+      message.classList.toggle('mpt-show', Boolean(state.message));
+
       toggleButton.textContent = state.editMode ? '編集を終える' : '編集する';
+      toggleButton.classList.remove('mpt-btn-primary', 'mpt-btn-secondary');
+      toggleButton.classList.add(state.editMode ? 'mpt-btn-secondary' : 'mpt-btn-primary');
 
       for (const day of DAY_KEYS) {
         for (const period of PERIOD_KEYS) {
