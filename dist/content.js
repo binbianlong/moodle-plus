@@ -1,22 +1,22 @@
-function O(e){try{return new URL(e,location.href).toString()}catch{return e}}function F(e){const t=e.closest('section, .block, [role="region"], .card, .content');return t?/最近アクセスされたアイテム/.test(t.textContent??""):!1}function P(e){const t=e.getAttribute("href")??"";return t?t.includes("course/view.php?id=")?!0:t.includes("assign/view.php")||t.includes("mod/assign/")?!1:!!(F(e)&&(t.includes("course/view.php")||t.includes("/mod/")&&!t.includes("assign"))):!1}function K(e){let t=new Map,r=null;const o=()=>{const n=new Map,m=document.querySelectorAll("a[href]");for(const a of m){if(!P(a))continue;const g=(a.textContent??"").trim(),x=a.href;if(!g||!x)continue;const u=O(x);n.has(u)||n.set(u,{title:g,url:u})}t=n};return o(),r=new MutationObserver(()=>{o()}),r.observe(document.body,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["href"]}),{findByAnchor(n){if(!P(n))return null;const m=O(n.href);return t.get(m)??null},disconnect(){r==null||r.disconnect(),r=null}}}const N="timetable_v1",A=["mon","tue","wed","thu","fri","sat"],$=["p1","p2","p3","p4","p5","other"];function z(){return{mon:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},tue:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},wed:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},thu:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},fri:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},sat:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null}}}async function G(){var o;const t=(await chrome.storage.local.get(N))[N];if(!t||typeof t!="object")return z();const r=z();for(const n of A)for(const m of $){const a=(o=t==null?void 0:t[n])==null?void 0:o[m];a&&typeof a=="object"&&typeof a.title=="string"&&typeof a.url=="string"&&(r[n][m]={title:a.title,url:a.url})}return r}async function Y(e){await chrome.storage.local.set({[N]:e})}const V={mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},J={p1:"1",p2:"2",p3:"3",p4:"4",p5:"5",other:"その他"},Q={p1:"9:00〜10:35",p2:"10:45〜12:20",p3:"13:10〜14:45",p4:"14:55〜16:30",p5:"16:40〜18:15"};function v(e,t,r){for(const o of t){const n=e.getPropertyValue(o).trim();if(n)return n}return r}function W(){const e=getComputedStyle(document.documentElement),t=v(e,["--body-bg","--bs-body-bg"],"#f8f9fa"),r=v(e,["--card-bg","--bs-card-bg","--bs-white"],"#ffffff"),o=v(e,["--border-color","--bs-border-color","--gray-300"],"#d9dee4"),n=v(e,["--body-color","--bs-body-color","--gray-900"],"#2b3138"),m=v(e,["--secondary","--bs-secondary-color","--gray-600"],"#5f6b7a"),a=v(e,["--primary","--bs-primary"],"#0f6cbf"),g=v(e,["--primary-600","--bs-primary-text-emphasis"],"#0c5a9f");return`
+function G(e){try{return new URL(e,location.href).toString()}catch{return e}}function ee(e){const t=e.closest('section, .block, [role="region"], .card, .content');return t?/最近アクセスされたアイテム/.test(t.textContent??""):!1}function V(e){const t=e.getAttribute("href")??"";return t?t.includes("course/view.php?id=")?!0:t.includes("assign/view.php")||t.includes("mod/assign/")?!1:!!(ee(e)&&(t.includes("course/view.php")||t.includes("/mod/")&&!t.includes("assign"))):!1}function te(e){let t=new Map,n=null;const o=()=>{const r=new Map,m=document.querySelectorAll("a[href]");for(const i of m){if(!V(i))continue;const h=(i.textContent??"").trim(),w=i.href;if(!h||!w)continue;const u=G(w);r.has(u)||r.set(u,{title:h,url:u})}t=r};return o(),n=new MutationObserver(()=>{o()}),n.observe(document.body,{childList:!0,subtree:!0,attributes:!0,attributeFilter:["href"]}),{findByAnchor(r){if(!V(r))return null;const m=G(r.href);return t.get(m)??null},disconnect(){n==null||n.disconnect(),n=null}}}const j="timetable_v1",B=["mon","tue","wed","thu","fri","sat"],Y=["p1","p2","p3","p4","p5","other"];function R(){return{mon:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},tue:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},wed:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},thu:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},fri:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null},sat:{p1:null,p2:null,p3:null,p4:null,p5:null,other:null}}}async function ne(){var o;const t=(await chrome.storage.local.get(j))[j];if(!t||typeof t!="object")return R();const n=R();for(const r of B)for(const m of Y){const i=(o=t==null?void 0:t[r])==null?void 0:o[m];i&&typeof i=="object"&&typeof i.title=="string"&&typeof i.url=="string"&&(n[r][m]={title:i.title,url:i.url})}return n}async function _(e){await chrome.storage.local.set({[j]:e})}const re={mon:"月",tue:"火",wed:"水",thu:"木",fri:"金",sat:"土"},oe={p1:"1",p2:"2",p3:"3",p4:"4",p5:"5",other:"その他"},ae={p1:"9:00〜10:35",p2:"10:45〜12:20",p3:"13:10〜14:45",p4:"14:55〜16:30",p5:"16:40〜18:15"};function C(e,t,n){for(const o of t){const r=e.getPropertyValue(o).trim();if(r)return r}return n}function ie(){const e=getComputedStyle(document.documentElement),t=C(e,["--body-bg","--bs-body-bg"],"#f8f9fa"),n=C(e,["--card-bg","--bs-card-bg","--bs-white"],"#ffffff"),o=C(e,["--border-color","--bs-border-color","--gray-300"],"#d9dee4"),r=C(e,["--body-color","--bs-body-color","--gray-900"],"#2b3138"),m=C(e,["--secondary","--bs-secondary-color","--gray-600"],"#5f6b7a"),i=C(e,["--primary","--bs-primary"],"#0f6cbf"),h=C(e,["--primary-600","--bs-primary-text-emphasis"],"#0c5a9f");return`
     --mpt-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     --mpt-bg-page: ${t};
-    --mpt-bg-surface: ${r};
-    --mpt-bg-subtle: color-mix(in srgb, ${t} 70%, ${r} 30%);
+    --mpt-bg-surface: ${n};
+    --mpt-bg-subtle: color-mix(in srgb, ${t} 70%, ${n} 30%);
     --mpt-border: ${o};
-    --mpt-text: ${n};
+    --mpt-text: ${r};
     --mpt-text-muted: ${m};
-    --mpt-primary: ${a};
-    --mpt-primary-hover: ${g};
-    --mpt-primary-soft: color-mix(in srgb, ${a} 14%, ${r} 86%);
+    --mpt-primary: ${i};
+    --mpt-primary-hover: ${h};
+    --mpt-primary-soft: color-mix(in srgb, ${i} 14%, ${n} 86%);
     --mpt-danger-soft: #eef1f4;
     --mpt-danger-text: #4b5563;
     --mpt-shadow: 0 1px 2px rgb(15 23 42 / 0.05);
     --mpt-radius: 8px;
-  `}function X(e){const t=document.createElement("div");t.className="mpt-host";const r=t.attachShadow({mode:"open"}),o=document.createElement("style");o.textContent=`
+  `}function le(e){const t=document.createElement("div");t.className="mpt-host";const n=t.attachShadow({mode:"open"}),o=document.createElement("style");o.textContent=`
     :host {
       all: initial;
-      ${W()}
+      ${ie()}
       color: var(--mpt-text);
       font-family: var(--mpt-font-family);
     }
@@ -86,8 +86,12 @@ function O(e){try{return new URL(e,location.href).toString()}catch{return e}}fun
       border-radius: 6px;
       border: 1px solid transparent;
       padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-size: 13px;
       font-weight: 600;
+      line-height: 1;
       cursor: pointer;
       transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
       white-space: nowrap;
@@ -127,6 +131,65 @@ function O(e){try{return new URL(e,location.href).toString()}catch{return e}}fun
 
     .mpt-btn-secondary:active {
       background: color-mix(in srgb, var(--mpt-bg-subtle) 90%, #000 10%);
+    }
+
+    .mpt-btn-danger {
+      background: #fff5f5;
+      border-color: #f1c8c8;
+      color: #a32929;
+    }
+
+    .mpt-btn-danger:hover {
+      background: #ffecec;
+      border-color: #eaa9a9;
+    }
+
+    .mpt-btn-danger:active {
+      background: #ffdede;
+    }
+
+    .mpt-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgb(0 0 0 / 0.24);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2147483647;
+    }
+
+    .mpt-modal-backdrop.mpt-show {
+      display: flex;
+    }
+
+    .mpt-modal {
+      width: min(420px, calc(100vw - 24px));
+      background: var(--mpt-bg-surface);
+      border: 1px solid var(--mpt-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .mpt-modal-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--mpt-text);
+    }
+
+    .mpt-modal-text {
+      font-size: 13px;
+      color: var(--mpt-text);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .mpt-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
     .mpt-table {
@@ -308,4 +371,4 @@ function O(e){try{return new URL(e,location.href).toString()}catch{return e}}fun
         --mpt-shadow: 0 1px 2px rgb(0 0 0 / 0.24);
       }
     }
-  `;const n=document.createElement("div");n.className="mpt-wrap";const m=document.createElement("div");m.className="mpt-header";const a=document.createElement("div");a.className="mpt-title-group";const g=document.createElement("div");g.className="mpt-title",g.textContent="時間割";const x=document.createElement("div");x.className="mpt-message";const u=document.createElement("button");u.className="mpt-btn",u.type="button",u.addEventListener("click",()=>e.onToggleEdit()),a.append(g,x),m.append(a,u);const S=document.createElement("table");S.className="mpt-table",n.append(m,S),r.append(o,n);const q=new Map;(()=>{S.innerHTML="";const i=document.createElement("tr"),l=document.createElement("th");l.textContent="",i.appendChild(l);for(const s of A){const d=document.createElement("th");d.textContent=V[s],i.appendChild(d)}S.appendChild(i);for(const s of $){const d=document.createElement("tr"),f=document.createElement("th");f.className="mpt-period";const M=document.createElement("span");M.className="mpt-period-main",M.textContent=J[s],f.appendChild(M);const h=Q[s];if(h){const p=document.createElement("span");p.className="mpt-period-time",p.textContent=h,f.appendChild(p)}d.appendChild(f);for(const p of A){const b=document.createElement("td");b.className="mpt-cell",b.dataset.day=p,b.dataset.period=s,b.addEventListener("click",()=>e.onSelectCell({day:p,period:s})),d.appendChild(b),q.set(`${p}:${s}`,b)}S.appendChild(d)}})();const j=(i,l,s)=>{var b,D;const d=i.dataset.day,f=i.dataset.period;i.innerHTML="";const M=((b=s.selectedCell)==null?void 0:b.day)===d&&((D=s.selectedCell)==null?void 0:D.period)===f;i.classList.toggle("mpt-selected",!!M);const h=document.createElement("div");if(h.className="mpt-cell-inner",!l){const c=document.createElement("span");c.className="mpt-empty",c.textContent=s.editMode?"クリックして選択":" ",h.appendChild(c),i.appendChild(h);return}const p=document.createElement("a");if(p.className="mpt-lesson-link",p.textContent=l.title,p.href=l.url,p.dataset.url=l.url,s.editMode&&p.addEventListener("click",c=>{c.preventDefault(),c.stopPropagation()}),h.appendChild(p),i.appendChild(h),s.editMode){const c=document.createElement("button");c.className="mpt-remove",c.type="button",c.textContent="x",c.setAttribute("aria-label","授業を削除"),c.addEventListener("click",I=>{I.preventDefault(),I.stopPropagation(),e.onRemoveCell({day:d,period:f})}),i.appendChild(c)}};return{mount(i){var l;(l=i.parentNode)==null||l.insertBefore(t,i)},render(i,l){x.textContent=l.message,x.classList.toggle("mpt-show",!!l.message),u.textContent=l.editMode?"編集を終える":"編集する",u.classList.remove("mpt-btn-primary","mpt-btn-secondary"),u.classList.add(l.editMode?"mpt-btn-secondary":"mpt-btn-primary");for(const s of A)for(const d of $){const f=q.get(`${s}:${d}`);f&&j(f,i[s][d],l)}}}}let k=z(),w=!1,C=null,E="",L=!1,T=!1;const B=X({onToggleEdit:()=>{w=!w,w?(E="枠を選んでください",ee()):(C=null,E="",U()),y()},onSelectCell:e=>{w&&(C=e,E="ダッシュボードから授業を入力してください",y())},onRemoveCell:async({day:e,period:t})=>{k[e][t]=null,await Y(k),y()}}),_=K();function y(){B.render(k,{editMode:w,selectedCell:C,message:E})}function Z(e){if(!C){E="枠を選んでください",y();return}k[C.day][C.period]=e,Y(k).catch(t=>{console.error("[mpt] failed to save timetable",t)}),E=`設定: ${e.title}`,y()}function H(e){if(!w)return;const t=e.target;if(!(t instanceof Element))return;const r=t.closest("a[href]");if(!(r instanceof HTMLAnchorElement))return;const o=_.findByAnchor(r);o&&(e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation(),Z(o))}function ee(){T||(document.addEventListener("click",H,!0),T=!0)}function U(){T&&(document.removeEventListener("click",H,!0),T=!1)}function te(){const e=Array.from(document.querySelectorAll('h1, h2, h3, h4, [role="heading"], .card-title, .header'));for(const r of e){if(!(r.textContent??"").trim().includes("コース概要"))continue;return r.closest('section, .block, .card, .container-fluid, [role="region"]')??r}const t=Array.from(document.querySelectorAll('[aria-label*="コース概要"], section, .block, .card, [role="region"]'));for(const r of t){const o=(r.getAttribute("aria-label")??"").trim(),n=(r.textContent??"").trim();if(o.includes("コース概要")||n.includes("コース概要"))return r}return null}function re(){return document.querySelector('[role="main"] .container-fluid')||document.querySelector('[role="main"]')||document.querySelector("main .container-fluid")||document.querySelector("main")||document.querySelector("#page-content")||document.body.firstElementChild}function R(){if(L)return!0;if(document.querySelector(".mpt-host"))return L=!0,!0;const e=te();if(e&&e.parentElement)return B.mount(e),L=!0,!0;const t=re();if(t){const r=document.createElement("div");return t.insertAdjacentElement("afterbegin",r),B.mount(r),r.remove(),L=!0,!0}return!1}function ne(){if(R()){y();return}const e=new MutationObserver(()=>{R()&&(y(),e.disconnect())});e.observe(document.documentElement,{childList:!0,subtree:!0})}async function oe(){location.pathname==="/my/courses.php"&&(k=await G(),ne(),window.addEventListener("beforeunload",()=>{U(),_.disconnect()}))}oe();
+  `;const r=document.createElement("div");r.className="mpt-wrap";const m=document.createElement("div");m.className="mpt-header";const i=document.createElement("div");i.className="mpt-title-group";const h=document.createElement("div");h.className="mpt-title",h.textContent="時間割";const w=document.createElement("div");w.className="mpt-message";const u=document.createElement("button");u.className="mpt-btn",u.type="button",u.addEventListener("click",()=>e.onToggleEdit());const N=document.createElement("div");N.style.display="flex",N.style.gap="8px",N.style.alignItems="center";const S=document.createElement("button");S.className="mpt-btn mpt-btn-danger",S.type="button",S.textContent="リセット",S.addEventListener("click",()=>{b.classList.add("mpt-show")}),i.append(h,w),N.append(S,u),m.append(i,N);const M=document.createElement("table");M.className="mpt-table";const b=document.createElement("div");b.className="mpt-modal-backdrop";const O=document.createElement("div");O.className="mpt-modal";const q=document.createElement("div");q.className="mpt-modal-title",q.textContent="確認";const D=document.createElement("div");D.className="mpt-modal-text",D.textContent="時間割の中の授業が全て消えます。よろしいですか？";const P=document.createElement("div");P.className="mpt-modal-actions";const A=document.createElement("button");A.type="button",A.className="mpt-btn mpt-btn-secondary",A.textContent="キャンセル";const T=document.createElement("button");T.type="button",T.className="mpt-btn mpt-btn-danger",T.textContent="リセット",P.append(A,T),O.append(q,D,P),b.appendChild(O),A.addEventListener("click",()=>{b.classList.remove("mpt-show")}),T.addEventListener("click",()=>{b.classList.remove("mpt-show"),e.onResetAll()}),b.addEventListener("click",a=>{a.target===b&&b.classList.remove("mpt-show")}),r.append(m,M,b),n.append(o,r);const U=new Map;(()=>{M.innerHTML="";const a=document.createElement("tr"),l=document.createElement("th");l.textContent="",a.appendChild(l);for(const s of B){const d=document.createElement("th");d.textContent=re[s],a.appendChild(d)}M.appendChild(a);for(const s of Y){const d=document.createElement("tr"),f=document.createElement("th");f.className="mpt-period";const z=document.createElement("span");z.className="mpt-period-main",z.textContent=oe[s],f.appendChild(z);const x=ae[s];if(x){const c=document.createElement("span");c.className="mpt-period-time",c.textContent=x,f.appendChild(c)}d.appendChild(f);for(const c of B){const g=document.createElement("td");g.className="mpt-cell",g.dataset.day=c,g.dataset.period=s,g.addEventListener("click",()=>e.onSelectCell({day:c,period:s})),d.appendChild(g),U.set(`${c}:${s}`,g)}M.appendChild(d)}})();const Z=(a,l,s)=>{var g,F;const d=a.dataset.day,f=a.dataset.period;a.innerHTML="";const z=((g=s.selectedCell)==null?void 0:g.day)===d&&((F=s.selectedCell)==null?void 0:F.period)===f;a.classList.toggle("mpt-selected",!!z);const x=document.createElement("div");if(x.className="mpt-cell-inner",!l){const p=document.createElement("span");p.className="mpt-empty",p.textContent=s.editMode?"クリックして選択":" ",x.appendChild(p),a.appendChild(x);return}const c=document.createElement("a");if(c.className="mpt-lesson-link",c.textContent=l.title,c.href=l.url,c.dataset.url=l.url,s.editMode&&c.addEventListener("click",p=>{p.preventDefault(),p.stopPropagation()}),x.appendChild(c),a.appendChild(x),s.editMode){const p=document.createElement("button");p.className="mpt-remove",p.type="button",p.textContent="x",p.setAttribute("aria-label","授業を削除"),p.addEventListener("click",K=>{K.preventDefault(),K.stopPropagation(),e.onRemoveCell({day:d,period:f})}),a.appendChild(p)}};return{mount(a){var l;(l=a.parentNode)==null||l.insertBefore(t,a)},render(a,l){w.textContent=l.message,w.classList.toggle("mpt-show",!!l.message),u.textContent=l.editMode?"編集を終える":"編集する",u.classList.remove("mpt-btn-primary","mpt-btn-secondary"),u.classList.add(l.editMode?"mpt-btn-secondary":"mpt-btn-primary"),S.style.display=l.editMode?"inline-flex":"none";for(const s of B)for(const d of Y){const f=U.get(`${s}:${d}`);f&&Z(f,a[s][d],l)}}}}let v=R(),E=!1,L=null,k="",$=!1,I=!1;const H=le({onToggleEdit:()=>{E=!E,E?(k="枠を選んでください",ce()):(L=null,k="",X()),y()},onSelectCell:e=>{E&&(L=e,k="ダッシュボードから授業を入力してください",y())},onRemoveCell:async({day:e,period:t})=>{v[e][t]=null,await _(v),y()},onResetAll:async()=>{E&&(v=R(),L=null,k="時間割をリセットしました",await _(v),y())}}),Q=te();function y(){H.render(v,{editMode:E,selectedCell:L,message:k})}function se(e){if(!L){k="枠を選んでください",y();return}v[L.day][L.period]=e,_(v).catch(t=>{console.error("[mpt] failed to save timetable",t)}),k=`設定: ${e.title}`,y()}function W(e){if(!E)return;const t=e.target;if(!(t instanceof Element))return;const n=t.closest("a[href]");if(!(n instanceof HTMLAnchorElement))return;const o=Q.findByAnchor(n);o&&(e.preventDefault(),e.stopPropagation(),e.stopImmediatePropagation(),se(o))}function ce(){I||(document.addEventListener("click",W,!0),I=!0)}function X(){I&&(document.removeEventListener("click",W,!0),I=!1)}function pe(){const e=Array.from(document.querySelectorAll('h1, h2, h3, h4, [role="heading"], .card-title, .header'));for(const n of e){if(!(n.textContent??"").trim().includes("コース概要"))continue;return n.closest('section, .block, .card, .container-fluid, [role="region"]')??n}const t=Array.from(document.querySelectorAll('[aria-label*="コース概要"], section, .block, .card, [role="region"]'));for(const n of t){const o=(n.getAttribute("aria-label")??"").trim(),r=(n.textContent??"").trim();if(o.includes("コース概要")||r.includes("コース概要"))return n}return null}function me(){return document.querySelector('[role="main"] .container-fluid')||document.querySelector('[role="main"]')||document.querySelector("main .container-fluid")||document.querySelector("main")||document.querySelector("#page-content")||document.body.firstElementChild}function J(){if($)return!0;if(document.querySelector(".mpt-host"))return $=!0,!0;const e=pe();if(e&&e.parentElement)return H.mount(e),$=!0,!0;const t=me();if(t){const n=document.createElement("div");return t.insertAdjacentElement("afterbegin",n),H.mount(n),n.remove(),$=!0,!0}return!1}function de(){if(J()){y();return}const e=new MutationObserver(()=>{J()&&(y(),e.disconnect())});e.observe(document.documentElement,{childList:!0,subtree:!0})}async function ue(){location.pathname==="/my/courses.php"&&(v=await ne(),de(),window.addEventListener("beforeunload",()=>{X(),Q.disconnect()}))}ue();

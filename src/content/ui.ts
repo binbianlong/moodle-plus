@@ -6,6 +6,7 @@ type Callbacks = {
   onToggleEdit(): void;
   onSelectCell(cell: CellKey): void;
   onRemoveCell(cell: CellKey): void;
+  onResetAll(): void;
 };
 
 const DAY_LABELS: Record<DayKey, string> = {
@@ -161,8 +162,12 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
       border-radius: 6px;
       border: 1px solid transparent;
       padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       font-size: 13px;
       font-weight: 600;
+      line-height: 1;
       cursor: pointer;
       transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease;
       white-space: nowrap;
@@ -202,6 +207,65 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
 
     .mpt-btn-secondary:active {
       background: color-mix(in srgb, var(--mpt-bg-subtle) 90%, #000 10%);
+    }
+
+    .mpt-btn-danger {
+      background: #fff5f5;
+      border-color: #f1c8c8;
+      color: #a32929;
+    }
+
+    .mpt-btn-danger:hover {
+      background: #ffecec;
+      border-color: #eaa9a9;
+    }
+
+    .mpt-btn-danger:active {
+      background: #ffdede;
+    }
+
+    .mpt-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgb(0 0 0 / 0.24);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 2147483647;
+    }
+
+    .mpt-modal-backdrop.mpt-show {
+      display: flex;
+    }
+
+    .mpt-modal {
+      width: min(420px, calc(100vw - 24px));
+      background: var(--mpt-bg-surface);
+      border: 1px solid var(--mpt-border);
+      border-radius: 8px;
+      box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    .mpt-modal-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--mpt-text);
+    }
+
+    .mpt-modal-text {
+      font-size: 13px;
+      color: var(--mpt-text);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .mpt-modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
     }
 
     .mpt-table {
@@ -406,13 +470,64 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
   toggleButton.type = 'button';
   toggleButton.addEventListener('click', () => callbacks.onToggleEdit());
 
+  const headerActions = document.createElement('div');
+  headerActions.style.display = 'flex';
+  headerActions.style.gap = '8px';
+  headerActions.style.alignItems = 'center';
+
+  const resetButton = document.createElement('button');
+  resetButton.className = 'mpt-btn mpt-btn-danger';
+  resetButton.type = 'button';
+  resetButton.textContent = 'リセット';
+  resetButton.addEventListener('click', () => {
+    modalBackdrop.classList.add('mpt-show');
+  });
+
   titleGroup.append(title, message);
-  header.append(titleGroup, toggleButton);
+  headerActions.append(resetButton, toggleButton);
+  header.append(titleGroup, headerActions);
 
   const table = document.createElement('table');
   table.className = 'mpt-table';
 
-  root.append(header, table);
+  const modalBackdrop = document.createElement('div');
+  modalBackdrop.className = 'mpt-modal-backdrop';
+  const modal = document.createElement('div');
+  modal.className = 'mpt-modal';
+  const modalTitle = document.createElement('div');
+  modalTitle.className = 'mpt-modal-title';
+  modalTitle.textContent = '確認';
+  const modalText = document.createElement('div');
+  modalText.className = 'mpt-modal-text';
+  modalText.textContent = '時間割の中の授業が全て消えます。よろしいですか？';
+  const modalActions = document.createElement('div');
+  modalActions.className = 'mpt-modal-actions';
+  const modalCancel = document.createElement('button');
+  modalCancel.type = 'button';
+  modalCancel.className = 'mpt-btn mpt-btn-secondary';
+  modalCancel.textContent = 'キャンセル';
+  const modalOk = document.createElement('button');
+  modalOk.type = 'button';
+  modalOk.className = 'mpt-btn mpt-btn-danger';
+  modalOk.textContent = 'リセット';
+  modalActions.append(modalCancel, modalOk);
+  modal.append(modalTitle, modalText, modalActions);
+  modalBackdrop.appendChild(modal);
+
+  modalCancel.addEventListener('click', () => {
+    modalBackdrop.classList.remove('mpt-show');
+  });
+  modalOk.addEventListener('click', () => {
+    modalBackdrop.classList.remove('mpt-show');
+    callbacks.onResetAll();
+  });
+  modalBackdrop.addEventListener('click', (event) => {
+    if (event.target === modalBackdrop) {
+      modalBackdrop.classList.remove('mpt-show');
+    }
+  });
+
+  root.append(header, table, modalBackdrop);
   shadow.append(style, root);
 
   const cellMap = new Map<string, HTMLTableCellElement>();
@@ -530,6 +645,7 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
       toggleButton.textContent = state.editMode ? '編集を終える' : '編集する';
       toggleButton.classList.remove('mpt-btn-primary', 'mpt-btn-secondary');
       toggleButton.classList.add(state.editMode ? 'mpt-btn-secondary' : 'mpt-btn-primary');
+      resetButton.style.display = state.editMode ? 'inline-flex' : 'none';
 
       for (const day of DAY_KEYS) {
         for (const period of PERIOD_KEYS) {

@@ -42,6 +42,14 @@ const ui = createTimetableUI({
     timetable[day][period] = null;
     await saveTimetable(timetable);
     render();
+  },
+  onResetAll: async () => {
+    if (!editMode) return;
+    timetable = createEmptyTimetable();
+    selectedCell = null;
+    infoMessage = '時間割をリセットしました';
+    await saveTimetable(timetable);
+    render();
   }
 });
 
