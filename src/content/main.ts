@@ -105,18 +105,38 @@ function disableCourseCapture(): void {
   captureEnabled = false;
 }
 
-function findDashboardHeading(): Element | null {
-  const candidates = Array.from(document.querySelectorAll('h1, h2, h3, .page-header-headings, .breadcrumb-nav'));
-  for (const element of candidates) {
-    const text = (element.textContent ?? '').trim();
-    if (text === 'ダッシュボード') return element;
-    if (text.includes('ダッシュボード')) return element;
+function findCourseOverviewTarget(): Element | null {
+  const headingCandidates = Array.from(document.querySelectorAll('h1, h2, h3, h4, [role="heading"], .card-title, .header'));
+
+  // Selector strategy for "コース概要" block:
+  // 1) First, locate an explicit heading node that includes "コース概要", then insert before that section.
+  // 2) If not found, locate a container whose aria-label/text includes "コース概要" and insert before that block.
+  // 3) Finally, fallback to main content start to avoid failing on delayed/variant Moodle DOM.
+  for (const heading of headingCandidates) {
+    const text = (heading.textContent ?? '').trim();
+    if (!text.includes('コース概要')) continue;
+    const section = heading.closest('section, .block, .card, .container-fluid, [role="region"]');
+    return section ?? heading;
   }
+
+  const labeled = Array.from(
+    document.querySelectorAll<HTMLElement>('[aria-label*="コース概要"], section, .block, .card, [role="region"]')
+  );
+  for (const element of labeled) {
+    const aria = (element.getAttribute('aria-label') ?? '').trim();
+    const text = (element.textContent ?? '').trim();
+    if (aria.includes('コース概要') || text.includes('コース概要')) {
+      return element;
+    }
+  }
+
   return null;
 }
 
 function findFallbackMountPoint(): Element | null {
   return (
+    document.querySelector('[role="main"] .container-fluid') ||
+    document.querySelector('[role="main"]') ||
     document.querySelector('main .container-fluid') ||
     document.querySelector('main') ||
     document.querySelector('#page-content') ||
@@ -126,10 +146,14 @@ function findFallbackMountPoint(): Element | null {
 
 function tryMountUI(): boolean {
   if (uiMounted) return true;
+  if (document.querySelector('.mpt-host')) {
+    uiMounted = true;
+    return true;
+  }
 
-  const heading = findDashboardHeading();
-  if (heading && heading.parentElement) {
-    ui.mount(heading);
+  const courseOverview = findCourseOverviewTarget();
+  if (courseOverview && courseOverview.parentElement) {
+    ui.mount(courseOverview);
     uiMounted = true;
     return true;
   }
@@ -167,7 +191,7 @@ function startMountObserver(): void {
 }
 
 async function init(): Promise<void> {
-  if (document.title && !document.title.includes('ダッシュボード')) {
+  if (location.pathname !== '/my/courses.php') {
     return;
   }
 
