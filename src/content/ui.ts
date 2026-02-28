@@ -6,7 +6,6 @@ type Callbacks = {
   onToggleEdit(): void;
   onSelectCell(cell: CellKey): void;
   onRemoveCell(cell: CellKey): void;
-  onOpenLesson(lesson: Lesson): void;
 };
 
 const DAY_LABELS: Record<DayKey, string> = {
@@ -296,6 +295,7 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
       align-items: center;
       justify-content: center;
       opacity: 0;
+      pointer-events: none;
       transition: opacity 120ms ease, background-color 120ms ease, border-color 120ms ease;
     }
 
@@ -303,6 +303,7 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
     .mpt-cell:focus-within .mpt-remove,
     .mpt-remove:focus-visible {
       opacity: 1;
+      pointer-events: auto;
     }
 
     .mpt-remove:hover {
@@ -462,11 +463,6 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
       link.addEventListener('click', (event) => {
         event.preventDefault();
         event.stopPropagation();
-      });
-    } else {
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        callbacks.onOpenLesson(lesson);
       });
     }
 

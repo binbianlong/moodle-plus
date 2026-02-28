@@ -42,9 +42,6 @@ const ui = createTimetableUI({
     timetable[day][period] = null;
     await saveTimetable(timetable);
     render();
-  },
-  onOpenLesson: (lesson) => {
-    window.location.href = lesson.url;
   }
 });
 
