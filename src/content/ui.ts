@@ -26,6 +26,14 @@ const PERIOD_LABELS: Record<PeriodKey, string> = {
   other: 'その他'
 };
 
+const PERIOD_TIMES: Partial<Record<PeriodKey, string>> = {
+  p1: '9:00〜10:35',
+  p2: '10:45〜12:20',
+  p3: '13:10〜14:45',
+  p4: '14:55〜16:30',
+  p5: '16:40〜18:15'
+};
+
 export type TimetableUIState = {
   editMode: boolean;
   selectedCell: CellKey | null;
@@ -226,6 +234,22 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
       font-size: 12px;
     }
 
+    .mpt-period-main {
+      display: block;
+      font-weight: 600;
+      line-height: 1.2;
+    }
+
+    .mpt-period-time {
+      display: block;
+      margin-top: 2px;
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--mpt-primary);
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
     .mpt-cell {
       position: relative;
       cursor: pointer;
@@ -413,7 +437,18 @@ export function createTimetableUI(callbacks: Callbacks): TimetableUI {
 
       const periodCell = document.createElement('th');
       periodCell.className = 'mpt-period';
-      periodCell.textContent = PERIOD_LABELS[period];
+      const periodMain = document.createElement('span');
+      periodMain.className = 'mpt-period-main';
+      periodMain.textContent = PERIOD_LABELS[period];
+      periodCell.appendChild(periodMain);
+
+      const periodTimeText = PERIOD_TIMES[period];
+      if (periodTimeText) {
+        const periodTime = document.createElement('span');
+        periodTime.className = 'mpt-period-time';
+        periodTime.textContent = periodTimeText;
+        periodCell.appendChild(periodTime);
+      }
       row.appendChild(periodCell);
 
       for (const day of DAY_KEYS) {
