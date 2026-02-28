@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "Moodle+R Timetable",
+  "version": "0.1.0",
+  "description": "Insert editable timetable UI into the Moodle+R dashboard.",
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["https://lms.ritsumei.ac.jp/my/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
